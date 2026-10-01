@@ -35,6 +35,8 @@ jobs:
       run: pacman -U --noconfirm jmcomic-qt-*.pkg.tar.zst
     - name: Smoke test
       run: |
+        # 图片(webp)和svg图标依赖Qt插件
+        python -c "from PySide6.QtGui import QImageReader as R; f={bytes(x).decode() for x in R.supportedImageFormats()}; print(sorted(f)); assert {'webp','svg','jpg','png','gif'} <= f"
         # 运行30秒仍未退出且日志无ERROR视为启动成功
         set +e
         sudo -u builder env QT_QPA_PLATFORM=offscreen timeout 30 jmcomic-qt

@@ -26,6 +26,8 @@ depends=(
   'python-requests'
   'python-tqdm'
   'python-yaml'
+  'qt6-imageformats'
+  'qt6-svg'
 )
 makedepends=('python-pip' 'qt6-base')
 optdepends=('qt6-wayland: 原生Wayland支持')
