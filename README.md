@@ -41,6 +41,21 @@
   2. 下载 [最新的版本](https://github.com/tonquer/JMComic-qt/releases)
   3. 运行
 
+  ### Arch Linux 及其衍生版 (Manjaro、EndeavourOS、CachyOS等)
+  1. 从AUR安装
+  ```
+  yay -S jmcomic-qt
+  ```
+  2. 或者手动编译安装
+  ```
+  git clone https://github.com/numb747/JMComic-qt.git
+  cd JMComic-qt/res/archlinux
+  makepkg -si
+  ```
+  3. 从应用菜单打开 JMComic，或在终端运行 `jmcomic-qt`
+  4. 配置、数据、缓存、日志遵循XDG规范，分别位于 `~/.config/jmcomic-qt`、`~/.local/share/jmcomic-qt`、`~/.cache/jmcomic-qt`、`~/.local/state/jmcomic-qt`
+  5. 超分功能(Waifu2x)仅支持x86_64，使用GPU加速需要安装 `vulkan-icd-loader` 及显卡对应的Vulkan驱动
+
 ## 如何编译
   ### 使用Git Actions编译
   1. 查看编译结果[Git Actions编译](https://github.com/tonquer/JMComic-qt/actions) 

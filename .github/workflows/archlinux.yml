@@ -1,0 +1,50 @@
+name: archlinux
+
+on:
+  push:
+    branches: [ main, archlinux ]
+    paths: [ 'src/**', 'res/**', '.github/workflows/archlinux.yml' ]
+  pull_request:
+    paths: [ 'src/**', 'res/**', '.github/workflows/archlinux.yml' ]
+  workflow_dispatch:
+
+jobs:
+  makepkg:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+    - name: Install git
+      run: pacman -Syu --noconfirm --needed git
+    - uses: actions/checkout@v4
+    - name: Prepare builder
+      run: |
+        useradd -m builder
+        echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        # 用当前检出的代码代替PKGBUILD中的tag源码包
+        cp res/archlinux/PKGBUILD /home/builder/
+        _tag=$(bash -c 'source res/archlinux/PKGBUILD; echo $_tag')
+        git archive HEAD --prefix="JMComic-qt-${_tag#v}/" -o "/home/builder/jmcomic-qt-${_tag}.tar.gz"
+        sed -i "0,/^sha256sums=('[^']*'/s//sha256sums=('SKIP'/" /home/builder/PKGBUILD
+        chown -R builder: /home/builder
+    - name: Build
+      working-directory: /home/builder
+      run: sudo -u builder makepkg -s --noconfirm
+    - name: Install
+      working-directory: /home/builder
+      run: pacman -U --noconfirm jmcomic-qt-*.pkg.tar.zst
+    - name: Smoke test
+      run: |
+        # 运行30秒仍未退出且日志无ERROR视为启动成功
+        set +e
+        sudo -u builder env QT_QPA_PLATFORM=offscreen timeout 30 jmcomic-qt
+        sts=$?
+        set -e
+        cat /home/builder/.local/state/jmcomic-qt/logs/*.log
+        test $sts -eq 124
+        ! grep -q ERROR /home/builder/.local/state/jmcomic-qt/logs/*.log
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: jmcomic-qt-archlinux
+        path: /home/builder/jmcomic-qt-*.pkg.tar.zst

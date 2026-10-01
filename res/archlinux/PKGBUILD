@@ -86,6 +86,7 @@ build() {
   PIP_CONFIG_FILE=/dev/null python -m pip install --isolated --no-index --no-deps \
     --no-compile --disable-pip-version-check --target "$srcdir/site-packages" "${_whl[@]}"
   rm -rf "$srcdir/site-packages/bin"
+  rm -f "$srcdir"/site-packages/*.dist-info/direct_url.json
 }
 
 package() {
