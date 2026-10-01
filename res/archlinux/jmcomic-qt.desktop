@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=JMComic
+Name[zh_CN]=禁漫天堂
+GenericName=Comic Browser
+GenericName[zh_CN]=漫画浏览器
+Comment=A JMComic comic browser
+Comment[zh_CN]=禁漫天堂PC客户端
+Exec=jmcomic-qt
+Icon=jmcomic-qt
+Terminal=false
+Categories=Graphics;Viewer;Qt;

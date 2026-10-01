@@ -71,6 +71,9 @@ if __name__ == "__main__":
         sys.exit(-111)
         
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
+    if sys.platform.startswith("linux"):
+        # Wayland下用于匹配 jmcomic-qt.desktop, 显示正确的任务栏图标
+        app.setDesktopFileName("jmcomic-qt")
     serverName = 'JMComic-qt'
     socket = QLocalSocket()
     socket.connectToServer(serverName)
