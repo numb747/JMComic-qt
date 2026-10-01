@@ -1,9 +1,11 @@
 import base64
 import hashlib
+import importlib.util
 import json
 import math
 import os
 import re
+import sys
 import time
 from collections import OrderedDict
 from urllib.parse import quote
@@ -257,6 +259,23 @@ class ToolUtil(object):
     def GetCanSaveName(name):
         # 限制文件夹名称为255/3的长度
         return str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name).rstrip(".").strip(" "))[:254//3-1].rstrip(".").strip(" ")
+
+    @staticmethod
+    def InitSrModelPath(sr):
+        # sr_vulkan预编译库在Python3.14+自动查找模型目录时会崩溃(PyTupleObject结构变化)
+        # 这里建立 <dir>/waifu2x 等软链接指向各模型包, 再用setModelPath显式指定
+        if sys.platform == "win32" or sys.version_info < (3, 14):
+            return
+        modelPath = os.path.join(Setting.GetDataPath(), "sr_models")
+        os.makedirs(modelPath, exist_ok=True)
+        for name in ("waifu2x", "realcugan", "realesrgan", "realsr"):
+            link = os.path.join(modelPath, name)
+            if os.path.islink(link):
+                os.remove(link)
+            spec = importlib.util.find_spec("sr_vulkan_model_" + name)
+            if spec and spec.submodule_search_locations and not os.path.exists(link):
+                os.symlink(os.path.join(list(spec.submodule_search_locations)[0], "models"), link)
+        sr.setModelPath(modelPath)
 
     @staticmethod
     def LoadCachePicture(filePath):

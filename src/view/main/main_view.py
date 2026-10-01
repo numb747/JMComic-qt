@@ -20,6 +20,7 @@ from task.task_multi import TaskMulti
 from task.task_qimage import TaskQImage
 from task.task_waifu2x import TaskWaifu2x
 from tools.log import Log
+from tools.tool import ToolUtil
 from view.download.download_dir_view import DownloadDirView
 from view.read.read_pool import QtReadImgPoolManager
 
@@ -234,6 +235,7 @@ class MainView(Main, QtTaskBase):
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 
+            ToolUtil.InitSrModelPath(sr)
             sts = sr.initSet(config.Encode, config.UseCpuNum)
             TaskWaifu2x().Start()
 
